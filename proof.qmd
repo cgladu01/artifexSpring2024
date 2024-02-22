@@ -1,0 +1,90 @@
+---
+title: "LinearRegressionProof"
+format: html
+editor: visual
+---
+
+As shown in 3.2 and 2.5 of the Linear Algebra slides. Note: $y$, $\beta$, and $\Lambda$ are already vectors.
+
+$\|y - \beta X\|_2^2 = RSS = \vec{y}^T\vec{y} - y\Lambda\beta - \beta^T\Lambda y+ \beta\Lambda^T\Lambda\beta$
+
+So
+
+$f(\beta) = \vec{y}^T\vec{y} - 2y^T\Lambda\beta + \beta^T(\Lambda^T\Lambda)\beta$
+
+$\nabla_\beta f(\beta) = 0 - 2\Lambda^Ty\ + 2(\Lambda^T\Lambda)^T\beta$
+
+$\nabla_\beta f(\beta) = 2(-\Lambda^Ty\ + (\Lambda^T\Lambda)^T\beta)$
+
+$\nabla_\beta f(\beta) = 0 = 2(-\Lambda^Ty\ + \Lambda^T\Lambda\beta)$
+
+$0 = -(y\Lambda)^T\ + \Lambda^T\Lambda\beta$
+
+$(y\Lambda)^T\ =\Lambda^T\Lambda\beta$
+
+$(\Lambda^T\Lambda)^{-1}(y\Lambda)^T\ =\beta$
+
+
+
+
+```{r warning=FALSE, results='hide'}
+# Loading package
+suppressPackageStartupMessages( {
+library(ISLR2)
+library(tidyverse)
+})
+
+```
+
+
+```{r}
+boston = Boston
+view(Boston)
+```
+
+
+```{r}
+
+ymodel = lm(medv ~ lstat, boston)
+summary(ymodel)
+```
+
+```{r}
+
+plot(boston$lstat, boston$medv)
+abline(ymodel)
+
+```
+
+```{r}
+plot(predict(ymodel), residuals(ymodel))
+```
+
+```{r}
+polymodel = lm(medv ~ poly(lstat, 3), data = boston)
+summary(polymodel)
+```
+
+```{r}
+plot(boston$lstat, predict(polymodel))
+```
+
+
+```{r}
+plot(predict(polymodel), residuals(polymodel))
+```
+``` {r}
+everythingmodel = lm(medv ~ ., data = boston)
+summary(everythingmodel)
+sum(residuals(everythingmodel)^2)
+```
+
+Predict for Crime try to find the smallest RSS
+
+```{r}
+cor(boston)[,1]
+crimeModel = lm(crim ~ , boston)
+summary(crimeModel)
+```
+
+
