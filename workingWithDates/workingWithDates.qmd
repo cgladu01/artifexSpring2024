@@ -1,0 +1,55 @@
+---
+title: "workingWithDates"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+conversions = read.csv("https://raw.githubusercontent.com/dbreynol/DS809/main/data/conversions.csv") 
+```
+# Data Wrangling Section
+
+
+# 1. What are the top 5 countries in terms of Display Ad conversions?
+
+```{r}
+displayAdsByCountry = head(filter(conversions, marketing_channel == "Display Ads") %>%  group_by(country_code) %>% summarise(totalconversion = sum(conversions, na.rm = TRUE)) %>% arrange(desc(totalconversion)), 5)
+
+print(displayAdsByCountry)
+```
+
+# 2. What is the distribution of US conversions by day of week (i.e., Mon - Fri)? (boxplots or histograms)
+
+```{r}
+conversionsByWeekDay = mutate(conversions, datestamp = wday(datestamp))
+usConversions = filter(conversionsByWeekDay, country_code == "us") %>% filter(datestamp > 1) %>% filter(datestamp < 7) %>% group_by(datestamp) %>% summarise(tot_con = sum(conversions, na.rm = TRUE))
+
+ggplot(usConversions, aes(x=datestamp, y=tot_con)) +
+  geom_bar(stat = "identity")
+```
+
+It Seems to be pretty uniform Though it might be a little left skewed, the difference isn't very large is probbably not worth mentioning.
+
+# 3. What is the distribution of US conversions by month? (boxplots or histogram)
+
+```{r}
+conversionsByMonth = mutate(conversions, datestamp = month(datestamp))
+usConversionsByMonth = filter(conversionsByMonth, country_code == "us") %>% group_by(datestamp) %>% summarise(tot_con = sum(conversions, na.rm = TRUE))
+
+ggplot(usConversionsByMonth, aes(x=datestamp, y=tot_con)) +
+  geom_bar(stat = "identity")
+```
+
+Looks pretty uniform to me dog. Though it is right skewed. Apparantly this isn't the data for a full year.
+
+# 4. Fit a linear regression model with daily US convsersions as your response (total across all marketing channels) and Day of week (i.e., Mon - Fri) as the covariate. What is the coefficient on Monday? What does this mean? 
+
+```{r}
+UsConversionsByDay = conversions %>%  mutate(day = wday(datestamp)) %>% filter(country_code == "us") %>% filter(day > 1) %>% filter(day < 7) %>% group_by(datestamp) %>% summarise(tot_con = sum(conversions, na.rm = TRUE)) %>% mutate(day = wday(datestamp))
+model = lm(tot_con ~ as.factor(day), UsConversionsByDay)
+
+summary(model)
+```
+
+So Monday is the intercept which makes it's coefficient 38,892 which means it expects about 38,892 conversions on monday
