@@ -1,0 +1,66 @@
+---
+title: "Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(shiny)
+library(tidyverse)
+library(DT)
+```
+
+Column {.sidebar}
+-------------------------------------------------------------
+```{r}
+selectInput("variable", label = "variable Selection", multiple = F, choices = colnames(mtcars), selected = "wt")
+
+actionButton("execute", "Download")
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Cheese
+
+```{r}
+cargraph <- reactive({
+  mtcars <- mtcars %>% select(mpg, input$variable) %>% 
+    rename(graphed_y = input$variable)
+  })
+renderPlot({
+  ggplot(cargraph(), aes(x = mpg, y = graphed_y)) + geom_point()
+})
+```
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### Chart C
+
+```{r}
+download1 <- eventReactive(input$execute, {
+  write.csv(cargraph(), "cars.csv")
+  print("Success")
+  
+})
+
+renderDT({
+  datatable(cargraph(), options= list(paging=F) )
+})
+```
+
+
+### Chart D
+
+```{r}
+renderText({
+  download1()
+})
+
+```
+

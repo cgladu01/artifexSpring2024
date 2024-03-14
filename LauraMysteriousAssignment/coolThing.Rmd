@@ -1,0 +1,67 @@
+---
+title: "Cool Thing"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(shiny)
+library(tidyverse)
+library(DT)
+library(readr)
+
+```
+
+
+```{r}
+pokemon <- read_csv("pokemon.csv")
+```
+
+Column {.sidebar}
+-------------------------------------------------------------
+```{r}
+selectInput("variable", label = "Y Selection", multiple = F, choices = colnames(pokemon), selected = "against_water")
+selectInput("variable1", label = "X Selection", multiple = F, choices = colnames(pokemon), selected = "pokedex_number")
+
+
+actionButton("execute", "Download")
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Cheese
+
+```{r}
+pokemonGraph <- reactive({
+  pokemon <- pokemon %>% select(input$variable1, input$variable, generation) %>% 
+    rename(graphed_y = input$variable) %>% 
+    rename(graphed_x = input$variable1)
+  })
+renderPlot({
+  ggplot(pokemonGraph()) + 
+    geom_point(aes(x = graphed_x, y = graphed_y, color = as.factor(generation)))
+})
+```
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### Chart C
+
+```{r}
+download1 <- eventReactive(input$execute, {
+  write.csv(pokemonGraph(), "pokemonGraph.csv")
+  print("Success")
+  
+})
+
+renderDT({
+  datatable(pokemonGraph(), options= list(paging=F) )
+})
+```
+
