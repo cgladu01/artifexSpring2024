@@ -13,12 +13,19 @@ library(shiny)
 library(tidyverse)
 library(DT)
 library(readr)
-
+library(data.table)
 ```
 
 
 ```{r}
 beaver = beaver2
+beaver0 = beaver1
+
+beaverDay1 = beaver %>% filter(day == 307)
+beaverDay2 = beaver %>% filter(day == 308) 
+beaverDay2$time = beaverDay2$time + 2400
+
+beaver = rbind(beaverDay1, beaverDay2)
 ```
 
 Column {data-width=650}
@@ -28,8 +35,7 @@ Column {data-width=650}
 
 ```{r}
 beaverGraph <- reactive({
-  beaver = beaver %>% filter(day == 307) %>%
-    select(time, temp)
+  beaver = beaver %>% select(time, temp)
   })
 renderPlot({
   ggplot(beaverGraph()) + 
