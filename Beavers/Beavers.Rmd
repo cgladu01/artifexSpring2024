@@ -18,50 +18,22 @@ library(readr)
 
 
 ```{r}
-pokemon <- read_csv("pokemon.csv")
+beaver = beaver2
 ```
-
-Column {.sidebar}
--------------------------------------------------------------
-```{r}
-selectInput("variable", label = "Y Selection", multiple = F, choices = colnames(pokemon), selected = "against_water")
-selectInput("variable1", label = "X Selection", multiple = F, choices = colnames(pokemon), selected = "pokedex_number")
-
-
-actionButton("execute", "Download")
-```i
 
 Column {data-width=650}
 -----------------------------------------------------------------------
 
-### Cheese
+### Beaver Temp Plot
 
 ```{r}
-pokemonGraph <- reactive({
-  pokemon <- pokemon %>% select(input$variable1, input$variable, generation) %>% 
-    rename(graphed_y = input$variable) %>% 
-    rename(graphed_x = input$variable1)
+beaverGraph <- reactive({
+  beaver = beaver %>% filter(day == 307) %>%
+    select(time, temp)
   })
 renderPlot({
-  ggplot(pokemonGraph()) + 
-    geom_point(aes(x = graphed_x, y = graphed_y, color = as.factor(generation)))
-})
-```
-
-Column {.tabset}
------------------------------------------------------------------------
-
-### Chart C
-
-```{r}
-download1 <- eventReactive(input$execute, {
-  write.csv(pokemonGraph(), "pokemonGraph.csv")
-  print("Success")
-  
+  ggplot(beaverGraph()) + 
+    geom_point(aes(x = time, y = temp))
 })
 
-renderDT({
-  datatable(pokemonGraph(), options= list(paging=F) )
-})
-```
 
