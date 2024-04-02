@@ -29,7 +29,7 @@ selectInput("variable1", label = "X Selection", multiple = F, choices = colnames
 
 
 actionButton("execute", "Download")
-```
+```i
 
 Column {data-width=650}
 -----------------------------------------------------------------------
