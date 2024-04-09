@@ -25,22 +25,25 @@ beaverDay1 = beaver2 %>% filter(day == 307)
 beaverDay2 = beaver2 %>% filter(day == 308) 
 beaverDay2$time = beaverDay2$time + 2400
 
-
-beaver2 = rbind(beaverDay1, beaverDay2)
+beaver2 = rbind(beaverDay1, beaverDay2) 
+beaver2$beaver = "beaver2"
 
 beaverDay1 = beaver1 %>% filter(day == 346)
 beaverDay2 = beaver1 %>% filter(day == 347) 
 beaverDay2$time = beaverDay2$time + 2400
 
 beaver1 = rbind(beaverDay1, beaverDay2)
+beaver1$beaver = "beaver1"
+
+beavers = rbind(beaver1, beaver2)
 ```
 
 Column {data-width=50}
 -----------------------------------------------------------------------
 ```{r}
-selectInput("variable", label = "Y Selection", multiple = F, choices = c("beaver1", "beaver2"), selected = "beaver2")
+selectInput("variable", label = "Beaver_Selection", multiple = F, choices = c("beaver1", "beaver2"), selected = "beaver2")
 
-actionButton("execute", "Download")
+#actionButton("execute", "Download")
 ```
 
 
@@ -51,17 +54,13 @@ Column {data-width=650}
 
 ```{r}
 
-beaverGraph <- reactive({
-  if (variable == "beaver2") {
-    beaver = beaver2;
-  } else {
-    beaver = beaver1
-  }
 
-  beaver = beaver %>% select(time, temp)
+beaverGraph <- reactive({
+# input$variable
+  beaver = beavers %>% select(input$variable, time, temp)
   })
 renderPlot({
-  ggplot(beaverGraph()) + 
+  ggplot(beaverGraph()) +
     geom_point(aes(x = time, y = temp))
 })
 
