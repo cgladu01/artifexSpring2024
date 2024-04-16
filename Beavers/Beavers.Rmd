@@ -13,13 +13,48 @@ library(shiny)
 library(tidyverse)
 library(DT)
 library(readr)
-
+library(data.table)
+library(zoo)
 ```
 
 
 ```{r}
-beaver = beaver2
+beaver2 = beaver2
+beaver1 = beaver1
+
+beaverDay1 = beaver2 %>% filter(day == 307)
+beaverDay2 = beaver2 %>% filter(day == 308) 
+beaverDay2$time = beaverDay2$time + 2400
+beaver2 = rbind(beaverDay1, beaverDay2) 
+
+beaver2$rollMean = rollmean(beaver2$temp, 5, fill = NA)
+
+beaver2$beaver = "beaver2"
+
+
+beaverDay1 = beaver1 %>% filter(day == 346)
+beaverDay2 = beaver1 %>% filter(day == 347) 
+beaverDay2$time = beaverDay2$time + 2400
+beaver1 = rbind(beaverDay1, beaverDay2)
+
+beaver1$rollMean = rollmean(beaver1$temp, 5, fill = NA)
+
+beaver1$beaver = "beaver1"
+
+
+beavers = rbind(beaver1, beaver2)
+beavers = rename(beavers, actual = temp)
 ```
+
+Column {data-width=50}
+-----------------------------------------------------------------------
+```{r}
+selectInput("variable", label = "Beaver Selection", multiple = F, choices = c("beaver1", "beaver2"), selected = "beaver2")
+selectInput("variable1", label = "Rolling Mean Actual", multiple = F, choices = c("rollMean", "actual"), selected = "beaver2")
+
+actionButton("execute", "Download")
+```
+
 
 Column {data-width=650}
 -----------------------------------------------------------------------
@@ -27,13 +62,19 @@ Column {data-width=650}
 ### Beaver Temp Plot
 
 ```{r}
-beaverGraph <- reactive({
-  beaver = beaver %>% filter(day == 307) %>%
-    select(time, temp)
+
+beaverGraph <- reactive ({
+
+  beaver = beavers %>% filter(beaver == input$variable) %>%  
+    select(time, input$variable1) %>% 
+    rename(graphed_y = input$variable1)
   })
 renderPlot({
-  ggplot(beaverGraph()) + 
-    geom_point(aes(x = time, y = temp))
+  ggplot(beaverGraph()) +
+    geom_point(aes(x = time, y = graphed_y)) + 
+    ylim(36.5, 38.5)
 })
+
+```
 
 
