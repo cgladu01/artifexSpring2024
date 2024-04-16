@@ -46,7 +46,7 @@ beavers = rbind(beaver1, beaver2)
 beavers = rename(beavers, actual = temp)
 ```
 
-Column {data-width=50}
+Column {data-width=40}
 -----------------------------------------------------------------------
 ```{r}
 selectInput("variable", label = "Beaver Selection", multiple = F, choices = c("beaver1", "beaver2"), selected = "beaver2")
@@ -69,39 +69,24 @@ beaverGraph <- reactive ({
     select(time, input$variable1) %>% 
     rename(graphed_y = input$variable1)
   }) 
-# renderPlot({
-#   ggplot(beaverGraph()) +
-#     geom_point(aes(x = time, y = graphed_y)) + 
-#     ylim(36.5, 38.5) +
-#     stat_smooth(method = "lm") + 
-#     ggtitle("Linear Model Fitted to Beaver Data")
-# })
 
 renderPlot({
-  data <- beaverGraph()  # Retrieve the data frame
+  data <- beaverGraph()  
   ggplot(data, aes(x = time, y = graphed_y)) +
     geom_point() + 
     ylim(36.5, 38.5) +
     stat_smooth(method = "lm") + 
-    ggtitle("Linear Model Fitted to Beaver Data")
+    ggtitle("Linear Model Fitted to Beaver Data") +
+    ylab("temperature")  
 })
-
-
-# ggplot(data = churn_data, aes(x=Distinct_Called_Numbers, y=Customer_Value)) +
-#   geom_point() +
-#   stat_smooth(method = "lm", col = "dodgerblue3") +
-#   theme(panel.background = element_rect(fill = "white"),
-#         axis.line.x=element_line(),
-#         axis.line.y=element_line()) +
-#   ggtitle("Linear Model Fitted to Data") 
 
 ```
 
 
-Column {data-width=500}
+Column {data-width=480}
 -----------------------------------------------------------------------
 
-### Beaver !!
+### Beaver :)
 
 ```{r picture, echo = F, fig.cap = "Title", out.width = '100%'}
  knitr::include_graphics(
