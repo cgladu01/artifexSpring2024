@@ -68,13 +68,45 @@ beaverGraph <- reactive ({
   beaver = beavers %>% filter(beaver == input$variable) %>%  
     select(time, input$variable1) %>% 
     rename(graphed_y = input$variable1)
-  })
+  }) 
+# renderPlot({
+#   ggplot(beaverGraph()) +
+#     geom_point(aes(x = time, y = graphed_y)) + 
+#     ylim(36.5, 38.5) +
+#     stat_smooth(method = "lm") + 
+#     ggtitle("Linear Model Fitted to Beaver Data")
+# })
+
 renderPlot({
-  ggplot(beaverGraph()) +
-    geom_point(aes(x = time, y = graphed_y)) + 
-    ylim(36.5, 38.5)
+  data <- beaverGraph()  # Retrieve the data frame
+  ggplot(data, aes(x = time, y = graphed_y)) +
+    geom_point() + 
+    ylim(36.5, 38.5) +
+    stat_smooth(method = "lm") + 
+    ggtitle("Linear Model Fitted to Beaver Data")
 })
+
+
+# ggplot(data = churn_data, aes(x=Distinct_Called_Numbers, y=Customer_Value)) +
+#   geom_point() +
+#   stat_smooth(method = "lm", col = "dodgerblue3") +
+#   theme(panel.background = element_rect(fill = "white"),
+#         axis.line.x=element_line(),
+#         axis.line.y=element_line()) +
+#   ggtitle("Linear Model Fitted to Data") 
 
 ```
 
 
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Beaver !!
+
+```{r picture, echo = F, fig.cap = "Title", out.width = '100%'}
+ knitr::include_graphics(
+  "BEAVER.png"
+ )
+
+
+```
