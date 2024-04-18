@@ -84,16 +84,25 @@ renderPlot({
 
 ```
 
+
+
+
 ### ARIMA Model
 
 ```{r}
 renderPlot({
-    beavTS1 = ts(beaver1$temp, frequency = 1)
+  beavTS1 = ts(beaver1$temp, frequency = 1)
   beavTS2 = ts(beaver2$temp, frequency = 1)
   
-  modelA1 = auto.arima(beavTS1)
-  fx_beav1 = forecast(modelA1)
-  plot(fx_beav1)
+  if (input$variable == "beaver1") {
+    modelA = auto.arima(beavTS1)
+  } else {
+    modelA = auto.arima(beavTS2)
+  }
+  
+  
+  fx_beav = forecast(modelA)
+  plot(fx_beav)
 })
 
 ```
