@@ -53,6 +53,7 @@ Column {data-width=40}
 ```{r}
 selectInput("variable", label = "Beaver Selection", multiple = F, choices = c("beaver1", "beaver2"), selected = "beaver2")
 selectInput("variable1", label = "Rolling Mean Actual", multiple = F, choices = c("rollMean", "actual"), selected = "beaver2")
+sliderInput("variable2", label = "Forecast Length", min = 3, max = 50, value = 3)
 
 actionButton("execute", "Download")
 ```
@@ -91,8 +92,8 @@ renderPlot({
 
 ```{r}
 renderPlot({
-  beavTS1 = ts(beaver1$temp, frequency = 1)
-  beavTS2 = ts(beaver2$temp, frequency = 1)
+  beavTS1 = ts(beaver1$temp, frequency = input$variable2)
+  beavTS2 = ts(beaver2$temp, frequency = input$variable2)
   
   if (input$variable == "beaver1") {
     modelA = auto.arima(beavTS1)
@@ -116,7 +117,6 @@ Column {data-width=480}
  knitr::include_graphics(
   "BEAVER.png"
  )
-
 
 ```
 
